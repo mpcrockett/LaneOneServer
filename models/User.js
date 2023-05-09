@@ -6,7 +6,6 @@ require('dotenv').config();
 module.exports = class User {
   constructor(obj) {
     this.user_id = obj.user_id;
-    this.username = obj.username;
     this.password = obj.password;
     this.email = obj.email;
     this.first_name = obj.first_name;
@@ -17,13 +16,8 @@ module.exports = class User {
   };
 
   async getUserById() {
-    const user = await pool.query("SELECT username, first_name, last_name, email, birthday, loyalty_acct FROM users WHERE user_id = $1", [this.user_id]);
+    const user = await pool.query("SELECT first_name, last_name, email, birthday, loyalty_acct FROM users WHERE user_id = $1", [this.user_id]);
     return user.rows[0]; 
-  }
-
-  async getUserIdByUsername() {
-    let user = await pool.query("SELECT user_id FROM users WHERE username = $1", [this.username]);
-    return user.rows.length === 0 ? false : user.rows[0].user_id;
   }
 
   async getUserIdByEmail() {
@@ -35,8 +29,8 @@ module.exports = class User {
     const salt = await bcrypt.genSalt(10);
     const encryptedPassword = await bcrypt.hash(this.password, salt);
   
-    const newUser = await pool.query("INSERT INTO users (username, password, first_name, last_name, email) VALUES ($1, $2, $3, $4, $5) RETURNING user_id",
-     [this.username, encryptedPassword, this.first_name, this.last_name, this.email]
+    const newUser = await pool.query("INSERT INTO users ( password, first_name, last_name, email) VALUES ($1, $2, $3, $4) RETURNING user_id",
+     [encryptedPassword, this.first_name, this.last_name, this.email]
     );
 
     this.user_id = newUser.rows[0].user_id;

@@ -14,16 +14,15 @@ module.exports = {
   
   async createNewUser(req, res) {
     const user = new User(req.user);
-    const usernameTaken = await user.getUserIdByUsername();
-    if(usernameTaken) return res.status(400).send("This username is taken.");
 
     const emailRegistered = await user.getUserIdByEmail();
     if(emailRegistered) return res.status(400).send("This email address is already registered.");
   
     await user.createNewUser();
     const token = await user.generateUserAccessToken();
+    req.session.token = token;
 
-    res.header('x-auth-token', token).status(201).send("User created.");
+    res.status(201).send("User created.");
   },
 
   async updateUser(req, res) {

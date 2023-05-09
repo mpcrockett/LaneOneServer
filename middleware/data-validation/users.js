@@ -3,14 +3,12 @@ const { newUserSchema, userUpdatesSchema, passwordSchema } = require('./schemas/
 
 
 const validateNewUser = (req, res, next) => {
-  const { username, password, first_name, last_name, email, birthday } = req.body;
+  const { password, firstName, lastName, email } = req.body.values;
   const newUser = {
-    username,
     password,
-    first_name,
-    last_name,
+    first_name: firstName,
+    last_name: lastName,
     email, 
-    birthday
   };
 
   const { error, value } = newUserSchema.validate(newUser);

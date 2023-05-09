@@ -3,11 +3,6 @@ const { joiPasswordExtendCore } = require('joi-password');
 const joiPassword = Joi.extend(joiPasswordExtendCore);
 
 const newUserSchema = Joi.object({
-  username: Joi.string()
-    .alphanum()
-    .min(3)
-    .max(30)
-    .required(),
   password: joiPassword
     .string()
     .minOfSpecialCharacters(1)
