@@ -9,6 +9,7 @@ const productRouter = require('./routes/products');
 const cartRouter = require('./routes/cart');
 const session = require('express-session');
 const pool = require('./db');
+const categoryRouter = require('./routes/category');
 const pgSession = require('connect-pg-simple')(session);
 
 const pgPool = new pg.Pool({
@@ -39,4 +40,5 @@ module.exports = function(app) {
   app.use('/api/users', userRouter);
   app.use('/api/products', productRouter);
   app.use('/api/cart', cartRouter);
+  app.use('/api/category', categoryRouter);
 };

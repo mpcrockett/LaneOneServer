@@ -22,7 +22,7 @@ module.exports = {
     const token = await user.generateUserAccessToken();
     req.session.token = token;
 
-    res.status(201).send("User created.");
+    res.status(201).send({ firstName: user.first_name, lastName: user.last_name, email: user.email });
   },
 
   async updateUser(req, res) {
