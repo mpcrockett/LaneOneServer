@@ -20,9 +20,14 @@ module.exports = class User {
     return user.rows[0]; 
   }
 
-  async getUserIdByEmail() {
-    let user = await pool.query("SELECT user_id FROM users WHERE email = $1", [this.email]);
-    return user.rows.length === 0 ? false : user.rows[0].user_id;
+  async getUserByEmail() {
+    let user = await pool.query("SELECT user_id, first_name, last_name, birthday, loyalty_acct FROM users WHERE email = $1", [this.email]);
+    if(user.rows.length === 0) {
+      return false
+    } else {
+      this.user_id = user.rows[0].user_id;
+      return this.user_id
+    }
   }
 
   async createNewUser() {
@@ -31,7 +36,7 @@ module.exports = class User {
   
     const newUser = await pool.query("INSERT INTO users ( password, first_name, last_name, email) VALUES ($1, $2, $3, $4) RETURNING user_id",
      [encryptedPassword, this.first_name, this.last_name, this.email]
-    );
+    ); 
 
     this.user_id = newUser.rows[0].user_id;
   }
@@ -43,13 +48,13 @@ module.exports = class User {
 
   async generateUserAccessToken() {
     const getAdmin = await pool.query("SELECT is_admin FROM users WHERE user_id = $1", [this.user_id]);
-    const is_admin = this.is_admin || getAdmin.rows[0].is_admin;
-    const token = jwt.sign({ user_id: this.user_id, username: this.username, is_admin }, process.env.JWTPRIVATEKEY);
+    const is_admin = getAdmin.rows[0].is_admin || false;
+    const token = jwt.sign({ user_id: this.user_id, is_admin }, process.env.JWTPRIVATEKEY);
     return token;
   }
 
   async validateUserPassword() {
-    const user = await pool.query("SELECT password FROM users WHERE username = $1", [this.username]);
+    const user = await pool.query("SELECT password FROM users WHERE email = $1", [this.email]);
     const userPassword = user.rows[0].password;
     const validPassword = await bcrypt.compare(this.password, userPassword);
     return validPassword;
