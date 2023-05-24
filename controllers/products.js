@@ -21,6 +21,23 @@ module.exports = {
     const products = await Product.getAllProducts();
     return res.status(200).send(products);
   },
+  async getProductsByGender(req, res) {
+    const gender =  req.params.gender;
+    const products = await Product.getProductsByGender(gender);
+    return res.status(200).send(products);
+  },
+  async getProductsByCategory(req, res) {
+    const gender =  req.params.gender;
+    const cat_name = req.params.category;
+    const products = await Product.getProductsByCategory(gender, cat_name);
+    return res.status(200).send(products);
+  },
+  async getProductsBySubcategory(req, res) {
+    const gender =  req.params.gender;
+    const slug = req.params.subcategory;
+    const products = await Product.getProductsBySubcategory(gender, slug);
+    return res.status(200).send(products);
+  },
   async getProductById(req, res) {
     let product = await Product.getProductById(req.params.id);
     if(!product) return res.status(400).send("Product not found.");

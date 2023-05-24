@@ -28,12 +28,61 @@ module.exports = class Product {
   }
 
   static async getAllProducts() {
-    const products = await pool.query("SELECT name, description, gender, price, brand FROM products");
+    const products = await pool.query(`
+    SELECT * FROM products
+    JOIN subcategories
+    ON products.subcategory_id = subcategories.subcategory_id
+    JOIN categories
+    ON subcategories.category_id = categories.category_id
+    `);
+    return products.rows;
+  }
+
+  static async getProductsByGender(gender) {
+    const products = await pool.query(`
+      SELECT * FROM products
+      JOIN subcategories
+      ON products.subcategory_id = subcategories.subcategory_id
+      JOIN categories
+      ON subcategories.category_id = categories.category_id
+      WHERE subcategories.gender = $1`,
+      [gender]);
+    return products.rows;
+  }
+
+  static async getProductsByCategory(gender, cat_name) {
+    const products = await pool.query(
+      `SELECT * FROM products
+      JOIN subcategories
+      ON products.subcategory_id = subcategories.subcategory_id
+      JOIN categories
+      ON subcategories.category_id = categories.category_id
+      WHERE categories.cat_name = $1 AND subcategories.gender = $2`, 
+      [cat_name, gender]);
+    return products.rows;
+  }
+
+  static async getProductsBySubcategory(gender, subcategory_slug) {
+    const products = await pool.query(
+      `SELECT * FROM products
+      JOIN subcategories
+      ON products.subcategory_id = subcategories.subcategory_id
+      JOIN categories
+      ON subcategories.category_id = categories.category_id
+      WHERE subcategories.slug = $1 AND subcategories.gender = $2`, 
+      [subcategory_slug, gender]);
     return products.rows;
   }
 
   static async getProductById(product_id) {
-    const product = await pool.query("SELECT name, description, gender, price, brand FROM products WHERE product_id = $1", [product_id]);
+    const product = await pool.query(`
+      SELECT * FROM products 
+      JOIN subcategories
+      ON products.subcategory_id = subcategories.subcategory_id
+      JOIN categories
+      ON subcategories.category_id = categories.category_id
+      WHERE product_id = $1`,
+      [product_id]);
     return product.rows.length === 0 ? false : product.rows[0];
   }
 

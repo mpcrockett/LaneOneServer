@@ -10,7 +10,6 @@
     "test": "npm run build && jest --runInBand --verbose --coverage",
     "migrate": "node-pg-migrate"
   },
- 
   "author": "Melissa Crockett",
   "license": "ISC",
   "bugs": {
@@ -32,6 +31,7 @@
     "jsonwebtoken": "^8.5.1",
     "node-pg-migrate": "^6.2.2",
     "nodemon": "^2.0.20",
+    "passport-google-oidc": "^0.1.0",
     "pg": "^8.8.0",
     "swagger-ui-express": "^4.6.0",
     "winston": "^3.8.2"

@@ -25,7 +25,7 @@ module.exports = class Category {
     const awaitedResults = await Promise.all(response);
     const results = awaitedResults.map((r) => {
       const reducedResults = r.rows.reduce((acc, obj) => {
-        const key = obj['name'];
+        const key = obj['cat_name'];
         const currGroup = acc[key] ?? [];
         return {...acc, [key]: [...currGroup, obj]}
       }, {});

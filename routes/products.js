@@ -8,8 +8,12 @@ const authorize = require('../middleware/authorization/authorize');
 const productRouter = express.Router();
 // authenticates user
 productRouter.get('/', products.getAllProducts);
+productRouter.get('/:gender', products.getProductsByGender);
+productRouter.get('/:gender/:category', products.getProductsByCategory);
+productRouter.get('/:gender/:category/:subcategory', products.getProductsBySubcategory);
+productRouter.get('/:gender/:category/:subcategory/:id', products.getProductById)
+
 productRouter.post('/', authorize, validateProduct, products.createNewProduct);
-productRouter.get('/:id', products.getProductById);
 productRouter.post('/:id', authorize, validateItem, products.addItemsToInventory);
 productRouter.put('/:id', authorize, validateProduct, products.updateProduct);
 productRouter.delete('/:id', authorize, products.deleteProductById);

@@ -12,10 +12,6 @@ const pool = require('./db');
 const categoryRouter = require('./routes/category');
 const pgSession = require('connect-pg-simple')(session);
 
-const pgPool = new pg.Pool({
-    // Insert pool options here
-});
-
 module.exports = function(app) {
   app.use(cors());
   app.use(express.json());
