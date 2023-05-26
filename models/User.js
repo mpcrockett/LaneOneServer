@@ -13,6 +13,8 @@ module.exports = class User {
     this.birthday = obj.birthday;
     this.loyalty_acct = obj.loyalty_acct;
     this.new_password = obj.new_password;
+    this.google_id = obj.google_id;
+    this.provider = obj.provider
   };
 
   async getUserById() {
@@ -41,6 +43,12 @@ module.exports = class User {
     this.user_id = newUser.rows[0].user_id;
   }
 
+  async registerGoogleUser() {
+    const newGoogleUser = await pool.query("INSERT INTO users (first_name, last_name, email, provider, google_id) VALUES ($1, $2, $3, $4, $5) RETURNING user_id", 
+      [this.first_name, this.last_name, this.email, this.provider, this.google_id]);
+    this.user_id = newGoogleUser.rows[0].user_id;
+  }
+
   async updateUserById() {
     await pool.query("UPDATE users SET first_name = $1, last_name = $2, birthday = $3 WHERE username = $4 AND user_id = $5", 
     [this.first_name, this.last_name, this.birthday, this.username, this.user_id]);
@@ -64,6 +72,15 @@ module.exports = class User {
     const salt = await bcrypt.genSalt(10);
     const encryptedPassword = await bcrypt.hash(this.new_password, salt);
     await pool.query("UPDATE users SET password = $1 WHERE username = $2", [encryptedPassword, this.username]);
+  }
+
+  static async checkGoogleRegistration(provider, id) {
+    try {
+      const user = await pool.query("SELECT * FROM users WHERE provider = $1 AND google_id = $2", [provider, id]);
+      return user.rows.length > 0 ? user.rows : false;
+    } catch (error) {
+      return error
+    }
   }
 
   static async getUserOrdersById(user_id) {

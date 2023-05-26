@@ -4,6 +4,7 @@ const pg = require('pg');
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger/swagger.json')
 const userRouter = require('./routes/users');
+const googleAuthRouter = require('./routes/googleAuth');
 const loginRouter = require('./routes/login');
 const productRouter = require('./routes/products');
 const cartRouter = require('./routes/cart');
@@ -11,6 +12,7 @@ const session = require('express-session');
 const pool = require('./db');
 const categoryRouter = require('./routes/category');
 const pgSession = require('connect-pg-simple')(session);
+const passport = require('./middleware/authentication/googleAuth');
 
 module.exports = function(app) {
   app.use(cors());
@@ -33,6 +35,7 @@ module.exports = function(app) {
   }));
   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
   app.use('/api/login', loginRouter);
+  app.use('/api/google-auth', googleAuthRouter);
   app.use('/api/users', userRouter);
   app.use('/api/products', productRouter);
   app.use('/api/cart', cartRouter);
