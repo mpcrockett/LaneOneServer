@@ -4,8 +4,8 @@ const googleAuthRouter = express.Router();
 
 googleAuthRouter.post('/', passport.authenticate('google'));
 googleAuthRouter.get('/oauth2/redirect', passport.authenticate('google', {
-  successReturnToOrRedirect: 'http://localhost:5173/',
-  failureRedirect: 'http://localhost:5173/login'
+  successReturnToOrRedirect: 'http://localhost:5173/callback',
+  failureRedirect: 'http://localhost:5173/api/account'
 }));
 googleAuthRouter.get('/logout', function(req, res, next) {
   req.logout(function(err) {
@@ -14,4 +14,4 @@ googleAuthRouter.get('/logout', function(req, res, next) {
   });
 });
 
-module.exports = googleAuthRouter;
+module.exports = googleAuthRouter;  
