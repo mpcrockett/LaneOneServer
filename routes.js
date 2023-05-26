@@ -51,7 +51,8 @@ module.exports = function(app) {
             first_name: profile.name.givenName, 
             last_name: profile.name.familyName, 
             email: profile.emails[0].value, 
-            provider: issuer, google_id: profile.id
+            provider: issuer,
+            google_id: profile.id
           });
           await user.registerGoogleUser();
         } 
