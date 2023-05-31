@@ -34,6 +34,7 @@
     "passport": "^0.6.0",
     "passport-google-oidc": "^0.1.0",
     "pg": "^8.8.0",
+    "stripe": "^12.7.0",
     "swagger-ui-express": "^4.6.0",
     "winston": "^3.8.2"
   },

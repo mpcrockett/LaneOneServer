@@ -29,8 +29,11 @@ module.exports = class Product {
 
   static async getAllProducts() {
     const products = await pool.query(`
-    SELECT * FROM products
-    JOIN subcategories
+    WITH products AS (
+        SELECT product_id, description, name, brand, gender, url, subcategory_id, price::money::numeric::decimal AS price
+      FROM products )
+    SELECT * FROM subcategories
+    JOIN products
     ON products.subcategory_id = subcategories.subcategory_id
     JOIN categories
     ON subcategories.category_id = categories.category_id
@@ -40,8 +43,11 @@ module.exports = class Product {
 
   static async getProductsByGender(gender) {
     const products = await pool.query(`
-      SELECT * FROM products
-      JOIN subcategories
+      WITH products AS (
+        SELECT product_id, description, name, brand, gender, url, subcategory_id, price::money::numeric::decimal AS price
+      FROM products )
+      SELECT * FROM subcategories
+      JOIN products
       ON products.subcategory_id = subcategories.subcategory_id
       JOIN categories
       ON subcategories.category_id = categories.category_id
@@ -50,10 +56,31 @@ module.exports = class Product {
     return products.rows;
   }
 
+  // SELECT * FROM products
+  //     JOIN subcategories
+  //     ON products.subcategory_id = subcategories.subcategory_id
+  //     JOIN categories
+  //     ON subcategories.category_id = categories.category_id
+  //     WHERE subcategories.gender = $1
+
+  // WITH products AS (
+  // SELECT product_id, description, name, brand, gender, url, subcategory_id, price::NUMERIC
+  // FROM products
+  // SELECT * FROM subcategories
+  // JOIN products
+  // ON products.subcategory_id = subcategories.subcategory_id
+  // JOIN categories
+  // ON subcategories.category_id = categories.category_id
+  // WHERE subcategories.gender = $1`,
+  // // [gender]);
+
   static async getProductsByCategory(gender, cat_name) {
     const products = await pool.query(
-      `SELECT * FROM products
-      JOIN subcategories
+      `WITH products AS (
+        SELECT product_id, description, name, brand, gender, url, subcategory_id, price::money::numeric::decimal AS price
+      FROM products )
+      SELECT * FROM subcategories
+      JOIN products
       ON products.subcategory_id = subcategories.subcategory_id
       JOIN categories
       ON subcategories.category_id = categories.category_id
@@ -64,8 +91,11 @@ module.exports = class Product {
 
   static async getProductsBySubcategory(gender, subcategory_slug) {
     const products = await pool.query(
-      `SELECT * FROM products
-      JOIN subcategories
+      `WITH products AS (
+        SELECT product_id, description, name, brand, gender, url, subcategory_id, price::money::numeric::decimal AS price
+      FROM products )
+      SELECT * FROM subcategories
+      JOIN products
       ON products.subcategory_id = subcategories.subcategory_id
       JOIN categories
       ON subcategories.category_id = categories.category_id
@@ -76,8 +106,11 @@ module.exports = class Product {
 
   static async getProductById(product_id) {
     const product = await pool.query(`
-      SELECT * FROM products 
-      JOIN subcategories
+      WITH products AS (
+        SELECT product_id, description, name, brand, gender, url, subcategory_id, price::money::numeric::decimal AS price
+      FROM products )
+      SELECT * FROM subcategories
+      JOIN products
       ON products.subcategory_id = subcategories.subcategory_id
       JOIN categories
       ON subcategories.category_id = categories.category_id

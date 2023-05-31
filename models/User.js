@@ -84,7 +84,7 @@ module.exports = class User {
   }
 
   static async getUserOrdersById(user_id) {
-    const orders = await pool.query("SELECT order_id, order_total, free_shipping, order_status FROM orders WHERE user_id = $1", [user_id]);
+    const orders = await pool.query("SELECT order_id, order_status FROM orders WHERE user_id = $1", [user_id]);
     return orders.rows.length > 0 ? orders.rows : false;
   }
 

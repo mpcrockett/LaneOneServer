@@ -9,11 +9,11 @@ module.exports = Joi.object({
     .min(2)
     .max(50)
     .required(),
-  street_one: Joi.string()
+  street_address_one: Joi.string()
     .min(4)
     .max(50)
     .required(),
-  street_two: Joi.string()
+  street_address_two: Joi.string()
     .max(50),
   city: Joi.string()
     .min(3)

@@ -49,8 +49,12 @@ module.exports = {
   },
   async getUserOrders(req, res) {
     const { user_id } = req.user;
-    const response = await User.getUserOrdersById(user_id);
-    if(!response) return res.status(404).send("No orders found.");
+    const search = await User.getUserOrdersById(user_id);
+    if(!search) return res.status(404).send("No orders found.");
+    const orderPromises = search.map((o) => {
+      return Order.getOrderByOrderId(o.order_id);
+    });
+    const response = await Promise.all(orderPromises);
     return res.status(200).send(response);
   },
   async getUserOrder(req, res) {

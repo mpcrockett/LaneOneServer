@@ -13,7 +13,12 @@ const User = require('./models/User');
 const GoogleStrategy = require('passport-google-oidc');
 const pool = require('./db');
 const categoryRouter = require('./routes/category');
+const stripe = require('stripe')(process.env.STRIPE_TEST_KEY);
 const pgSession = require('connect-pg-simple')(session);
+const { calculateOrderAmount } = require('./utils');
+const authenticate = require('./middleware/authentication/authenticate');
+const Order = require('./models/Order');
+const Address = require('./models/Address');
 
 module.exports = function(app) {
   app.use(cors());
@@ -74,11 +79,45 @@ module.exports = function(app) {
       res.redirect('http://localhost:5173/callback')
     }
   );
+  app.post('/api/create-checkout-session', authenticate, async (req, res) => {
+    let orderId;
+    try {
+      const address = new Address(req.body.address);
+      const addressId = await address.createNewAddress();
+      const order = new Order({
+        items: req.body.items,
+        user_id: req.user.user_id,
+        address_id: addressId,
+      });
+      orderId = await order.createNewOrder();
+      const session = await stripe.checkout.sessions.create({
+        payment_method_types: ['card'],
+        mode: 'payment',
+        line_items: req.body.items.map(((item) => {
+          return {
+            price_data: {
+              currency: 'usd',
+              product_data: {
+                name: item.name,
+              },
+              unit_amount: item.price * 100
+            },
+            quantity: item.quantity,
+          }
+        })),
+        success_url: 'http://localhost:5173/success',
+        cancel_url: 'http://localhost:5173/cancel'
+      })
+      res.send({url: session.url});
+    } catch (error) {
+      await Order.cancelOrderById(orderId);
+      res.status(500).send({ error: error.message });
+    }
+  });
   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
   app.use('/api/login', loginRouter);
-  // app.use('/api/google-auth', googleAuthRouter);
   app.use('/api/users', userRouter);
   app.use('/api/products', productRouter);
   app.use('/api/cart', cartRouter);
-  app.use('/api/category', categoryRouter);
+  app.use('/api/category', categoryRouter); 
 };

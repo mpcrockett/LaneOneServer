@@ -33,6 +33,11 @@ module.exports = class Item {
     const items = await pool.query("SELECT * FROM items WHERE product_id = $1", [product_id]);
     return items.rows.length === 0 ? false : items.rows;
   }
+
+  static async getItemById(item_id) {
+    const item = await pool.query('SELECT * FROM items WHERE item_id = $1', [item_id]);
+    return item.rows[0];
+  }
   
   async deleteItemById () {
     await pool.query("DELETE FROM items WHERE item_id = $1", [this.item_id]);
